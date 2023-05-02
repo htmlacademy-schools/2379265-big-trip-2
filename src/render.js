@@ -15,5 +15,3 @@ export const createElement = (template) => {
 export const render = (component, container, place = RenderPosition.BEFOREEND) => {
   container.insertAdjacentElement(place, component.getElement());
 }
-
-export {RenderPosition, createElement, render};
