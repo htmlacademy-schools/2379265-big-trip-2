@@ -10,8 +10,8 @@ export const createElement = (template) => {
   newElement.innerHTML = template;
 
   return newElement.firstElementChild;
-}
+};
 
 export const render = (component, container, place = RenderPosition.BEFOREEND) => {
   container.insertAdjacentElement(place, component.element);
-}
+};
