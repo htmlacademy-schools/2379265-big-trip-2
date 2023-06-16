@@ -1,52 +1,47 @@
 import dayjs from 'dayjs';
+const DATE_TIME_FORMAT = 'DD/MM/YY hh:mm';
+const TIME_FORMAT = 'hh:mm';
+const TOTAL_DAY_MINUTES_COUNT = 1440;
+const HOUR_MINUTES_COUNT = 60;
+const DATE_FORMAT = 'YYYY-MM-DD';
+const getZeroInDuration = (value) =>{
+  if (value < 10){
+    return `0${value}`;
+  } else {
+    return `${value}`;
+  }
+};
+const getDateTime = (date) => dayjs(date).format(DATE_TIME_FORMAT);
+const humanizePointDueDate = (date) => dayjs(date).format('DD MMM');
+const getTime = (date) => dayjs(date).format(TIME_FORMAT);
+const getDate = (date) => dayjs(date).format(DATE_FORMAT);
+const getDuration = (dateFrom, dateTo) => {
+  const start = dayjs(dateFrom);
+  const end = dayjs(dateTo);
+  const difference = end.diff(start, 'minute');
 
-const isPointPast = (pointDate) => dayjs(pointDate.dateFrom).isBefore(dayjs());
-const isPointFuture = (pointDate) => dayjs(pointDate.dateFrom).isAfter(dayjs());
-const getDateTime = (date) => dayjs(date).format('DD/MM/YY hh:mm');
-const getDate = (date) => dayjs(date).format('DD MMM');
+  const days = Math.floor(difference / TOTAL_DAY_MINUTES_COUNT);
+  const restHours = Math.floor((difference - days * TOTAL_DAY_MINUTES_COUNT) / HOUR_MINUTES_COUNT);
+  const restMinutes = difference - (days * TOTAL_DAY_MINUTES_COUNT + restHours * HOUR_MINUTES_COUNT);
 
-const getDays = (days) => {
-  if (days < 10 && days !== 0) {
-    days = `0${days}D`;
-  }
-  else if (days === 0) {
-    days = '';
-  }
-  else {
-    days = `${days}D`;
-  }
-  return days;
+  const daysOutput = (days) ? `${getZeroInDuration(days)}D` : '';
+  const hoursOutput = (restHours) ? `${getZeroInDuration(restHours)}H` : '';
+  const minutesOutput = (restMinutes) ? `${getZeroInDuration(restMinutes)}M` : '';
+
+
+  return `${daysOutput} ${hoursOutput} ${minutesOutput}`;
 };
 
-const getHours = (hours) => {
-  while (hours > 23) {
-    hours -= 24;
-  }
+const sortPricePoint = (pointA, pointB) => pointB.basePrice - pointA.basePrice;
 
-  if (hours < 10 && hours !== 0) {
-    hours = `0${hours}H`;
-  }
-  else if (hours === 0) {
-    hours = '';
-  }
-  else {
-    hours = `${hours}H`;
-  }
-  return hours;
+const sortDayPoint = (pointA, pointB) => dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
+
+const sortTimePoint = (pointA, pointB) => {
+  const timePointA = dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
+  const timePointB = dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom));
+  return timePointB - timePointA;
 };
 
-const getMinutes = (minutes) => {
-  while (minutes > 59) {
-    minutes -= 60;
-  }
+const capitalizedString = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
-  if (minutes < 10 && minutes !== 0) {
-    minutes = `0${minutes}M`;
-  }
-  else {
-    minutes = `${minutes}M`;
-  }
-  return minutes;
-};
-
-export { isPointFuture, isPointPast, getDateTime, getDate, getDays, getHours, getMinutes };
+export {getDateTime, humanizePointDueDate, getTime, getDate, getDuration, sortPricePoint, sortDayPoint, sortTimePoint, capitalizedString};

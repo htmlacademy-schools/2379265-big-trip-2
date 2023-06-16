@@ -1,14 +1,12 @@
-import { remove, replace, render } from '../framework/render.js';
-import { FilterType, UpdateType } from '../mock/constants.js';
-import { filter } from '../utils/filter';
+import { render, replace, remove } from '../framework/render.js';
 import FilterView from '../view/filter-view.js';
-
+import { filter } from '../utils/filter.js';
+import { FilterType, UpdateType } from '../const.js';
 
 export default class FilterPresenter {
   #filterContainer = null;
   #filterModel = null;
   #pointsModel = null;
-
   #filterComponent = null;
 
   constructor(filterContainer, filterModel, pointsModel) {
@@ -17,12 +15,10 @@ export default class FilterPresenter {
     this.#pointsModel = pointsModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get filters() {
     const points = this.#pointsModel.points;
-
     return [
       {
         type: FilterType.EVERYTHING,
@@ -43,10 +39,9 @@ export default class FilterPresenter {
   }
 
   init = () => {
-    const filters = this.filters;
     const prevFilterComponent = this.#filterComponent;
 
-    this.#filterComponent = new FilterView(filters, this.#filterModel.filter);
+    this.#filterComponent = new FilterView(this.filters, this.#filterModel.filter);
     this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
 
     if (prevFilterComponent === null) {
