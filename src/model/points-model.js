@@ -1,30 +1,29 @@
 import Observable from '../framework/observable.js';
-import { UpdateType } from '../mock/constants.js';
+import { UpdateType } from '../const.js';
 
-export default class pointsModel extends Observable {
+export default class PointsModel extends Observable {
   #pointsApiService = null;
   #points = [];
 
-  constructor(pointsApiService) {
+  constructor(pointsApiService){
     super();
     this.#pointsApiService = pointsApiService;
+  }
+
+  get points() {
+    return this.#points;
   }
 
   init = async () => {
     try {
       const points = await this.#pointsApiService.points;
       this.#points = points.map(this.#adaptToClient);
-    } catch (err) {
+    } catch(err) {
       this.#points = [];
     }
 
     this._notify(UpdateType.INIT);
-
   };
-
-  get points() {
-    return this.#points;
-  }
 
   updatePoint = async (updateType, update) => {
     const index = this.#points.findIndex((point) => point.id === update.id);
@@ -42,7 +41,7 @@ export default class pointsModel extends Observable {
         ...this.#points.slice(index + 1),
       ];
       this._notify(updateType, updatedPoint);
-    } catch (err) {
+    } catch(err) {
       throw new Error('Can\'t update point');
     }
   };
@@ -53,7 +52,7 @@ export default class pointsModel extends Observable {
       const newPoint = this.#adaptToClient(response);
       this.#points.unshift(newPoint);
       this._notify(updateType, newPoint);
-    } catch (err) {
+    } catch(err) {
       throw new Error('Can\'t add point');
     }
   };
@@ -72,15 +71,13 @@ export default class pointsModel extends Observable {
         ...this.#points.slice(index + 1),
       ];
       this._notify(updateType);
-    }
-    catch (err) {
+    } catch(err) {
       throw new Error('Can\'t delete point');
     }
   };
 
   #adaptToClient = (point) => {
-    const adaptedPoint = {
-      ...point,
+    const adaptedPoint = {...point,
       basePrice: point['base_price'],
       dateFrom: point['date_from'] !== null ? new Date(point['date_from']) : point['date_from'],
       dateTo: point['date_to'] !== null ? new Date(point['date_to']) : point['date_to'],
